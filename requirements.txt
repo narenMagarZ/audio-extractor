@@ -6,3 +6,4 @@ python-multipart==0.0.20
 aioboto3==15.5.0
 types-aioboto3==15.5.0
 sqlalchemy==2.0.45
+psycopg2==2.9.11
