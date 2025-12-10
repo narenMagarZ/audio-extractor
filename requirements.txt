@@ -1,0 +1,8 @@
+fastapi==0.122.0
+uvicorn==0.38.0
+python-dotenv==1.2.1
+pydantic==v2.12.5
+python-multipart==0.0.20
+aioboto3==15.5.0
+types-aioboto3==15.5.0
+sqlalchemy==2.0.45
