@@ -14,7 +14,7 @@ s3_bucket = {
 
 db = {
   "db_host": os.getenv("DB_HOST"),
-  "db_username": os.getenv("DB_USERNAME"),
+  "db_username": os.getenv("DB_USER"),
   "db_port": os.getenv("DB_PORT"),
   "db_name": os.getenv("DB_NAME"),
   "db_password": os.getenv("DB_PASSWORD")
