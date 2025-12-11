@@ -1,2 +1,5 @@
-migrate:
-	PYTHONPATH=. python3 src/migration/create-audio-extraction-job.py
+migrate-up:
+	PYTHONPATH=. python3 src/migration/create-audio-extraction-jobs.py
+
+migrate-down:
+	PYTHONPATH=. python3 src/migration/drop-audio-extraction-jobs.py
