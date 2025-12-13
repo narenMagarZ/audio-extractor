@@ -1,0 +1,33 @@
+version: '3.9'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: audio_extractor
+    ports:
+      - "${APP_PORT}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - rabbit-mq
+
+  db:
+    image: postgres:15.15
+    container_name: app-db-server
+    ports:
+      - "${}:"
+    volumes:
+      - pg_data:/var/lib/pg/data
+    restart: always
+  
+  rabbit-mq:
+    image: rabbitmq:latest
+    container_name: rabbit-mq-server
+    ports:
+      - "${RABBIT_MQ_PORT}:"
+    restart: always
+
+volumes:
+  pg_data

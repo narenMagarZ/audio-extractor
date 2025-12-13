@@ -1,0 +1,23 @@
+name: deployment
+
+on:
+  push:
+    branches: ["main"]
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: action/checkout@v5
+      - name: ssh-login
+        if: github.ref == 'refs/heads/main'
+        uses: fifsky/ssh-action@master
+        with:
+          command: |
+            cd /home/ubuntu/projects
+            sudo docker compose up -d --build 
+          host: ${{ secrets.SERVER_HOST }},
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_KEY }}
