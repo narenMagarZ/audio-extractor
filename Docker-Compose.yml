@@ -17,7 +17,7 @@ services:
     image: postgres:15.15
     container_name: app-db-server
     ports:
-      - "${}:"
+      - "${DB_PORT}:5432"
     volumes:
       - pg_data:/var/lib/pg/data
     restart: always
@@ -26,7 +26,7 @@ services:
     image: rabbitmq:latest
     container_name: rabbit-mq-server
     ports:
-      - "${RABBIT_MQ_PORT}:"
+      - "${RABBITMQ_PORT}:5672"
     restart: always
 
 volumes:
