@@ -16,7 +16,7 @@ class SingletonMeta(type):
     return self._instance
 
 class DbEngine:
-  __pg_url: str = f"postgresql://{db.get("db_username")}:{db.get("db_password")}@{db.get("db_host")}/{db.get("db_name")}"
+  __pg_url: str = f"postgresql://{db.get('db_username')}:{db.get('db_password')}@{db.get('db_host')}/{db.get('db_name')}"
 
   def __init__(self):
     self.__engine = create_engine(self.__pg_url, echo=True, pool_size=100)
@@ -27,7 +27,7 @@ class DbEngine:
 
 class Database(metaclass=SingletonMeta):
   __engine: Engine
-  __pg_url: str = f"postgresql://{db.get("db_username")}:{db.get("db_password")}@{db.get("db_host")}/{db.get("db_name")}"
+  __pg_url: str = f"postgresql://{db.get('db_username')}:{db.get('db_password')}@{db.get('db_host')}/{db.get('db_name')}"
   db: Session
 
   def __init__(self):
