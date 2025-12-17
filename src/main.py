@@ -1,10 +1,14 @@
 from fastapi import FastAPI, APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
+import signal
+import threading
 
 from src.middlewares.file_upload_middleware import file_upload_middleware
 from src.database import database
+from src.message_producer.producer import message_producer, message_consumer
 
 database.connect()
+message_consumer.consume()
 
 app = FastAPI(title="Audio Extractor")
 
@@ -33,3 +37,17 @@ async def generic_exception_handler(request, exc):
       "detail": str(exc)
     }
   )
+
+
+
+def handle_shutdown():
+  print("Server shutdown...")
+
+signal.signal(signal.SIGINT, handle_shutdown)
+signal.signal(signal.SIGTERM, handle_shutdown)
+
+def sleep_server():
+  message_producer.produce({"name": "naren"})
+  print('produced')
+timer = threading.Timer(5, sleep_server)
+timer.start()

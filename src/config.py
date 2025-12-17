@@ -19,3 +19,10 @@ db = {
   "db_name": os.getenv("DB_NAME"),
   "db_password": os.getenv("DB_PASSWORD")
 }
+
+rabbitmq = {
+    "rabbitmq_host": os.getenv("RABBITMQ_HOST"),
+    "rabbitmq_user": os.getenv("RABBITMQ_USER"),
+    "rabbitmq_password": os.getenv("RABBITMQ_PASSWORD"),
+    "rabbitmq_port": os.getenv("RABBITMQ_PORT")
+}
