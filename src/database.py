@@ -42,6 +42,7 @@ class Database(metaclass=SingletonMeta):
         autoflush=False,
         expire_on_commit=False
       )()
+      print("Database connected successfully...")
     except Exception as e:
       print("Error connecting to DB", e)
       raise e
