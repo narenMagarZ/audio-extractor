@@ -5,10 +5,24 @@ import threading
 
 from src.middlewares.file_upload_middleware import file_upload_middleware
 from src.database import database
-from src.message_producer.producer import message_producer, message_consumer
+from src.producer import message_producer
+from src.consumer import MessageConsumer
+from src.logger import Logger
 
 database.connect()
-message_consumer.consume()
+
+try:
+  threads = []
+  threads.append(threading.Thread(target=message_producer.connect))
+  threads.append(threading.Thread(target=MessageConsumer().consume))
+
+  for thread in threads:
+    thread.start()
+  Logger().info("Rabbitmq started successfully...")
+except Exception as e:
+  raise
+
+
 
 app = FastAPI(title="Audio Extractor")
 
@@ -22,6 +36,13 @@ def check_health():
 @audio_router.post("/extract/{req_id}")
 async def extract_audio(request: Request):
   print(request.file, 'request.file')
+  # create job
+  # start job
+  # return
+  message_producer.produce(request.file)
+  # consumer listening job
+  # process job
+  # end job
   return { "success": True }
 
 router.include_router(audio_router)
@@ -46,8 +67,3 @@ def handle_shutdown():
 signal.signal(signal.SIGINT, handle_shutdown)
 signal.signal(signal.SIGTERM, handle_shutdown)
 
-def sleep_server():
-  message_producer.produce({"name": "naren"})
-  print('produced')
-timer = threading.Timer(5, sleep_server)
-timer.start()
