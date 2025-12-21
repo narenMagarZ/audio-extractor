@@ -3,3 +3,6 @@ migrate-up:
 
 migrate-down:
 	PYTHONPATH=. python3 src/migration/drop-audio-extraction-jobs.py
+
+run:
+	uvicorn src.main:app --host 127.0.0.1 --port 8000 ${RELOAD}
