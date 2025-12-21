@@ -1,41 +1,32 @@
-import pika
-from pika.exchange_type import ExchangeType
 import json
-from pika import channel
+from aio_pika.exchange import ExchangeType, Exchange
+from aio_pika import connect, Channel, Connection, Message
+from aio_pika.message import AbstractMessage
 
 from src.config import rabbitmq
-from src.logger import Logger
-  
+# from src.logger import Logger
+
+
 class MessageProducer:
-  def __init__(self):
-    self.__parameters = pika.URLParameters(f"amqp://{rabbitmq.get('rabbitmq_user')}:{rabbitmq.get('rabbitmq_password')}@{rabbitmq.get('rabbitmq_host')}:{rabbitmq.get('rabbitmq_port')}/%2F")
+    __channel: Channel
+    __connection: Connection
+    __exchange: Exchange
+    def __init__(self):
+        pass
+        
+    async def connect(self):
+        self.__connection = await connect(f"amqp://{rabbitmq['rabbitmq_user']}:{rabbitmq['rabbitmq_password']}@{rabbitmq['rabbitmq_host']}:{rabbitmq['rabbitmq_port']}/")
+        self.__channel = await self.__connection.channel()
 
-  def connect(self):
-    self.__connection = pika.SelectConnection(parameters=self.__parameters, on_close_callback=self.__handle_connection_close, on_open_callback=self.__handle_connection_open, on_open_error_callback=self.__handle_connection_open_error)
-    self.__connection.ioloop.start()
+        self.__exchange = await self.__channel.declare_exchange(name="exe.audio.extractor", type=ExchangeType.DIRECT)
+        queue = await self.__channel.declare_queue(name="queue.audio.extractor")
+        await queue.bind(self.__exchange, routing_key="key.extractor")
 
-  def __handle_connection_close(self, connection, reason):
-    Logger().error(f"Connection to producer closed: {reason}")
+    async def publish(self, msg):
+        data: AbstractMessage = Message(body=json.dumps(msg).encode())
+        await self.__exchange.publish(data, "key.extractor")
 
-  def __handle_connection_open(self, connection: pika.SelectConnection):
-    Logger().info("Connection to producer established successfully...")
-    connection.channel(on_open_callback=self.__handle_channel_open)
 
-  def __handle_channel_open(self, channel: channel.Channel):
-    self.__channel = channel
-    self.__channel.exchange_declare(exchange="exc.audio.extractor", exchange_type=ExchangeType.direct)
-    self.__channel.queue_declare(queue='queue.audio.extractor')
-    self.__channel.queue_bind(queue='queue.audio.extractor', exchange='exc.audio.extractor', routing_key='key.extractor')
-
-  def __handle_connection_open_error(self):
-    Logger.error(f"Failed to create connection to producer")
-
-  def produce(self, msg: any):
-    self.__channel.basic_publish(
-        exchange="exc.audio.extractor", 
-        routing_key='key.extractor', 
-        body=json.dumps(msg), 
-        properties=pika.BasicProperties(content_type='application/json')
-      )
-
-message_producer = MessageProducer()
+    async def close(self):
+        await self.__channel.close()
+        await self.__connection.close()

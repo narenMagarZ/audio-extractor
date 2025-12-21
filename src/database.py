@@ -44,7 +44,6 @@ class Database(metaclass=SingletonMeta):
       )()
       print("Database connected successfully...")
     except Exception as e:
-      print("Error connecting to DB", e)
       raise e
 
   def close(self):
